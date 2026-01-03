@@ -1,0 +1,29 @@
+{
+  "type": "module",
+  "name": "http-server",
+  "version": "0.0.1",
+  "description": "A lightweight, type-safe HTTP server framework for Node.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "tsx --test test/**/*.test.ts",
+    "prepare": "npm run build"
+  },
+  "author": "Mikhail Zuenko",
+  "dependencies": {
+    "zod": "^4.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
