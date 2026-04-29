@@ -15,6 +15,7 @@ export interface ServerRequest<Body extends BodyValue> {
     url: ServerRequestUrl;
     headers: Headers;
     body: Body;
+    signal: AbortSignal;
 };
 
 export interface ServerRouteOptions<Body extends BodyValue, Schema = Exclude<Body, undefined>> {

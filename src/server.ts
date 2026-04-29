@@ -12,6 +12,13 @@ export class Server extends Router {
 
         this.server = createServer(async (req, res) => {
             const url = new URL('/!' + (req.url || ''), `http://localhost`);
+
+            const abortController = new AbortController();
+            function abort() {
+                abortController.abort();
+            }
+            res.on('close', abort);
+
             const request: ServerRequest<any> = {
                 method: (req.method || '').toUpperCase(),
                 url: {
@@ -21,7 +28,8 @@ export class Server extends Router {
                     hash: url.hash
                 },
                 headers: new Headers(Object.entries(req.headersDistinct).flatMap(([key, values]) => values!.map<[string, string]>(value => [key, value]))),
-                body: Readable.toWeb(req)
+                body: Readable.toWeb(req),
+                signal: abortController.signal
             };
 
             try {
@@ -39,6 +47,9 @@ export class Server extends Router {
                 }
                 res.destroy();
             }
+            finally {
+                res.off('close', abort);
+            }
         });
     }
 
@@ -49,6 +60,7 @@ export class Server extends Router {
         res.writeHead(response.status);
     }
     private async writeBody(res: HttpServerResponse, response: ServerResponse) {
+        if (res.closed) return;
         for await (const chunk of response.body) {
             if (!res.headersSent) this.writeHead(res, response);
             res.write(chunk);
